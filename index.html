@@ -460,6 +460,7 @@ body {
             <option value="old">⚠️ 逾3年</option>
           </select>
           <select id="fy" onchange="renderDB()"><option value="">所有年份</option></select>
+          <button id="btn-old" onclick="toggleOld()" style="font-size:12px;padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text-muted);cursor:pointer;white-space:nowrap">📦 含2020前</button>
           <input type="text" id="search" placeholder="🔍  搜尋色名、Pantone、機殼廠、供應商..." oninput="renderDB()">
         </div>
         <div id="db-grid"></div>
@@ -823,7 +824,7 @@ function renderDB() {
     if (fy && !d.date.startsWith(fy)) return false;
     if (fcasing && d.casing !== fcasing) return false;
     if (fphysical === '1' && d.physical !== 1) return false;
-    if (fphysical === '0' && d.physical !== 0) return false;
+    if (!showOld && parseInt(d.date.slice(0,4)) < 2020) return false;
     return true;
   }).sort((a,b) => {
     // 銀藍/淺銀 在上，黑色系在下，同色系內日期新到舊
@@ -905,7 +906,7 @@ function cardHTML(d) {
   const borderStyle = d.finish === '粉烤' ? 'border-color:#c4b5fd' : 'border-color:#7dd3fc';
   const typeBadge = `<span class="badge ${d.type==='黑'?'badge-dark':d.type==='淺銀'?'badge-gray':'badge-blue'}" style="font-size:13px;padding:3px 10px">${d.type==='黑'?'黑色系':d.type==='淺銀'?'淺銀色系':'銀藍色系'}</span>`;
   const formBadge = d.photo
-    ? `<span class="badge badge-gray" style="font-size:13px;padding:3px 10px;cursor:pointer;border-color:#93c5fd;color:#2563eb" onclick="event.stopPropagation();openLightbox('${d.photo}','${d.name}　${d.casing}　${d.date}')" title="點擊查看實體照片"><span style="font-size:20px">📷</span> ${d.form}</span>`
+    ? `<span class="badge badge-gray" style="font-size:13px;padding:3px 10px;cursor:pointer;border-color:#93c5fd;color:#2563eb" onclick="event.stopPropagation();openLightbox('${d.photo}','${d.name}　${d.casing}　${d.date}')" title="點擊查看實體照片"><span style="font-size:16px">🔍</span> ${d.form}</span>`
     : `<span class="badge badge-gray" style="font-size:13px;padding:3px 10px">${d.form}</span>`;
 
   return `<div class="card ${d.recommend?'is-recommend':''} ${d.type!=='黑'?'type-blue':'type-black'}" style="align-items:stretch;${borderStyle}">
@@ -1226,6 +1227,17 @@ function closeLightbox() {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeLightbox();
 });
+
+let showOld = false;
+function toggleOld() {
+  showOld = !showOld;
+  const btn = document.getElementById('btn-old');
+  btn.style.background = showOld ? 'var(--accent)' : 'var(--surface)';
+  btn.style.color = showOld ? '#fff' : 'var(--text-muted)';
+  btn.style.borderColor = showOld ? 'var(--accent)' : 'var(--border)';
+  btn.textContent = showOld ? '📦 含2020前 ✓' : '📦 含2020前';
+  renderDB();
+}
 
 function showToast(msg) {
   const t = document.getElementById('toast');
