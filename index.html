@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>色板管理系統 — 奇吉(奇銘聖)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f2f5;
+  --bg2: #e8eaed;
+  --bg3: #dde0e5;
+  --surface: #ffffff;
+  --border: #e2e5ea;
+  --border2: #c8cdd6;
+  --text: #0f1117;
+  --text2: #2d3142;
+  --text3: #6b7280;
+  --accent: #2563eb;
+  --accent2: #1e3a8a;
+  --green: #059669;
+  --green-bg: #d1fae5;
+  --amber: #b45309;
+  --amber-bg: #fef3c7;
+  --red: #dc2626;
+  --red-bg: #fee2e2;
+  --powder: #7c3aed;
+  --powder-bg: #ede9fe;
+  --liquid: #0284c7;
+  --liquid-bg: #e0f2fe;
+  --shadow: 0 1px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 6px 20px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.06);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; }
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+/* Layout */
+.app { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  color: #e8edf3;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  box-shadow: 4px 0 24px rgba(0,0,0,0.15);
+}
+.sidebar-logo {
+  padding: 28px 22px 22px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.03);
+}
+.sidebar-logo h1 { font-size: 15px; font-weight: 600; letter-spacing: 0.03em; color: #fff; }
+.sidebar-logo p { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
+.sidebar-nav { padding: 10px 0; flex: 1; overflow-y: auto; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 22px;
+  font-size: 13px; color: rgba(255,255,255,0.55);
+  cursor: pointer; transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+.nav-item:hover { color: #fff; background: rgba(255,255,255,0.06); }
+.nav-item.active { color: #fff; background: rgba(255,255,255,0.08); border-left-color: #60a5fa; font-weight: 500; }
+.nav-item svg { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.8; }
+.casing-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 22px 7px 30px;
+  font-size: 12px; color: rgba(255,255,255,0.45);
+  cursor: pointer; transition: all 0.2s;
+  border-left: 3px solid transparent;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.casing-item:hover { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.05); }
+.casing-item.active { color: #fff; border-left-color: #fbbf24; background: rgba(255,255,255,0.08); }
+.casing-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.sidebar-footer {
+  padding: 14px 22px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  font-size: 10px;
+  color: rgba(255,255,255,0.2);
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.06em;
+}
+.main { margin-left: 240px; flex: 1; }
+.topbar {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(240,242,245,0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  height: 58px;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+}
+.topbar-title { font-size: 16px; font-weight: 600; flex: 1; color: var(--text); letter-spacing: -0.01em; }
+.content { padding: 28px 32px; }
+
+/* Stats */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.stat-val { font-size: 36px; font-weight: 500; font-family: 'DM Mono', monospace; color: var(--accent); margin-bottom: 4px; }
+.stat-lbl { font-size: 14px; color: #1a1a1a; }
+
+/* Toolbar */
+.toolbar {
+  display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+  margin-bottom: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  box-shadow: var(--shadow);
+}
+.toolbar input, .toolbar select {
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 13px; height: 36px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.toolbar input:focus, .toolbar select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+.toolbar input { flex: 1; min-width: 180px; }
+.toolbar-right { margin-left: auto; display: flex; gap: 8px; }
+
+/* Section labels */
+.section-label {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 14px; font-weight: 600; color: var(--text);
+  margin: 24px 0 14px;
+  text-transform: none; letter-spacing: -0.01em;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+
+/* Grid */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+
+/* Card */
+.card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex; gap: 14px; align-items: flex-start;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
+}
+.card:hover { box-shadow: var(--shadow-md); border-color: var(--border2); transform: translateY(-1px); transition: all 0.2s ease; }
+.card.is-recommend { border: 2px solid #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1), var(--shadow); }
+.card.is-recommend:hover { box-shadow: 0 0 0 4px rgba(59,130,246,0.2), 0 0 20px rgba(59,130,246,0.25), var(--shadow-md); transform: translateY(-2px); }
+
+.swatch {
+  width: 56px; height: 56px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid rgba(0,0,0,0.08);
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.15), 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.card-body { flex: 1; min-width: 0; }
+.card-title { font-size: 14px; font-weight: 500; margin-bottom: 5px; display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
+.card-meta { font-size: 13px; color: var(--text2); line-height: 1.8; }
+.card-meta span { color: var(--text3); }
+.card-badges { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px; }
+.card-actions { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+
+/* Badges */
+.badge {
+  display: inline-flex; align-items: center;
+  font-size: 11px; padding: 2px 8px;
+  border-radius: 999px; font-weight: 400;
+}
+.badge-recommend { background: #dbeafe; color: var(--accent); border: 1px solid #bfdbfe; }
+.badge-archived { background: var(--bg2); color: var(--text3); border: 1px solid var(--border); }
+.badge-dark { background: #1f2937; color: #e5e7eb; }
+.badge-blue { background: #1e3a5f; color: #bfdbfe; }
+.badge-gray { background: var(--bg2); color: var(--text2); border: 1px solid var(--border); }
+.badge-powder { background: var(--powder-bg); color: var(--powder); border: 1px solid #c4b5fd; }
+.badge-liquid { background: var(--liquid-bg); color: var(--liquid); border: 1px solid #7dd3fc; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 12px; padding: 5px 12px; height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text2);
+  cursor: pointer; transition: all 0.15s;
+  white-space: nowrap; font-weight: 500;
+}
+.btn:hover { background: var(--bg2); color: var(--text); border-color: var(--border2); box-shadow: var(--shadow); }
+.btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); font-size: 13px; height: 40px; padding: 0 20px; box-shadow: 0 2px 8px rgba(37,99,235,0.3); }
+.btn-primary:hover { background: #1d4ed8; border-color: #1d4ed8; color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,0.4); }
+.btn-recommend { color: var(--green); border-color: #86efac; background: var(--green-bg); }
+.btn-recommend:hover { background: #bbf7d0; }
+.btn-danger { color: var(--red); border-color: #fca5a5; }
+.btn-danger:hover { background: var(--red-bg); }
+.btn-ghost { background: transparent; border-color: transparent; color: var(--text3); }
+.btn-ghost:hover { background: var(--bg2); color: var(--text); border-color: var(--border); }
+.btn-export { font-size: 12px; }
+
+/* Form */
+.form-wrap { max-width: 560px; }
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+}
+.form-card h3 { font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.06em; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-full { grid-column: 1/-1; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group label { font-size: 12px; color: var(--text3); font-weight: 400; }
+.form-group input,
+.form-group select,
+.form-group textarea {
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 13px; padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus { border-color: var(--accent); background: #fff; }
+.form-group textarea { resize: vertical; min-height: 70px; }
+.form-check { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.form-check input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent); }
+.form-check label { font-size: 13px; color: var(--text); cursor: pointer; }
+.form-actions { display: flex; gap: 10px; align-items: center; margin-top: 4px; }
+.form-msg { font-size: 13px; }
+.form-msg.success { color: var(--green); }
+.form-msg.error { color: var(--red); }
+.color-input-row { display: flex; gap: 8px; align-items: center; }
+.color-input-row input[type=color] { width: 46px; height: 36px; padding: 2px; cursor: pointer; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg); }
+
+/* Compare */
+
+/* Empty */
+.empty { padding: 3rem; text-align: center; color: var(--text3); font-size: 13px; }
+
+/* Page */
+.page { display: none; }
+.page.active { display: block; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 999;
+  background: var(--accent2); color: #fff;
+  padding: 12px 18px; border-radius: var(--radius);
+  font-size: 13px; box-shadow: var(--shadow-md);
+  transform: translateY(80px); opacity: 0;
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  pointer-events: none;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+.health-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 16px; }
+.health-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative; overflow: hidden;
+}
+.health-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.health-card.status-green { border-color: #bbf7d0; background: linear-gradient(135deg,#fff,#f0fdf4); }
+.health-card.status-yellow { border-color: #fde68a; background: linear-gradient(135deg,#fff,#fffbeb); }
+.health-card.status-red { border-color: #fecaca; background: linear-gradient(135deg,#fff,#fef2f2); }
+.health-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+.health-lamp {
+  width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+  box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+}
+.lamp-green { background: #22c55e; color: #22c55e; }
+.lamp-yellow { background: #f59e0b; color: #f59e0b; }
+.lamp-red { background: #ef4444; color: #ef4444; }
+.health-casing { font-size: 15px; font-weight: 600; flex: 1; color: var(--text); }
+.health-summary {
+  font-size: 12px; color: var(--text3);
+  margin-bottom: 14px; padding-bottom: 10px;
+  border-bottom: 1px dashed var(--border);
+}
+.health-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; padding: 5px 0;
+  border-bottom: 0.5px solid rgba(0,0,0,0.04);
+}
+.health-row:last-child { border-bottom: none; }
+.health-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 4px currentColor; }
+.health-name { flex: 1; color: var(--text2); }
+.health-date { color: var(--text3); font-size: 11px; font-family: 'DM Mono', monospace; }
+.health-overview { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
+.health-stat {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 16px; padding: 20px 16px; text-align: center;
+  box-shadow: var(--shadow-md);
+}
+.health-stat-total { border-color: #bfdbfe; }
+.health-stat-green { border-color: #bbf7d0; }
+.health-stat-yellow { border-color: #fde68a; }
+.health-stat-red { border-color: #fecaca; }
+.health-stat-val { font-size: 36px; font-weight: 700; font-family: 'DM Mono', monospace; line-height: 1; margin-bottom: 6px; }
+.health-stat-lbl { font-size: 12px; color: var(--text3); font-weight: 500; letter-spacing: 0.03em; }
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+.sb-red-blink { animation: blink 1.4s ease-in-out infinite; }
+
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+    .content { padding: 20px 16px; }
+  .topbar { padding: 0 16px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .menu-btn { display: flex !important; }
+}
+.menu-btn { display: none; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface); cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <h1>色板管理系統</h1>
+      <p>奇吉 · 奇銘聖機殼</p>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" onclick="switchPage('db',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        色板資料庫
+      </div>
+      <div class="nav-item" onclick="switchPage('health',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        健康檢測
+      </div>
+      <div class="nav-item" onclick="switchPage('add',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+        新增色板
+      </div>
+      <div class="nav-item" onclick="switchPage('trash',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        垃圾桶 <span id="trash-count" style="margin-left:auto;background:rgba(255,255,255,0.15);border-radius:999px;padding:1px 7px;font-size:11px;display:none"></span>
+      </div>
+      <div style="padding:16px 20px 6px;font-size:10px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.1em">機殼廠</div>
+      <div id="sidebar-casings"></div>
+    </nav>
+      <div style="padding:12px 16px;border-top:1px solid rgba(255,255,255,0.08);margin-top:8px">
+        <div style="font-size:10px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px">健康檢測</div>
+        <div style="display:flex;gap:8px">
+          <div style="flex:1;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.25);border-radius:8px;padding:8px 10px;text-align:center">
+            <div style="font-size:18px;font-weight:500;color:#4ade80" id="sb-green">—</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px">😊 狀態良好</div>
+          </div>
+          <div style="flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 10px;text-align:center">
+            <div style="font-size:18px;font-weight:500;color:rgba(255,255,255,0.6)" id="sb-red">—</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px">📋 可申請新樣</div>
+          </div>
+        </div>
+      </div>
+    <div class="sidebar-footer">v2.0 · 2026</div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="topbar">
+      <button class="menu-btn" id="menuBtn" onclick="toggleSidebar()" aria-label="選單">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+      <span class="topbar-title" id="topbar-title">色板資料庫</span>
+      <button class="btn btn-export" onclick="exportCSV()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        匯出 CSV
+      </button>
+    </div>
+
+    <div class="content">
+
+      <!-- 資料庫頁 -->
+      <div id="page-db" class="page active">
+        <div class="stats" id="stats-row"></div>
+        <div class="toolbar">
+          <select id="fcat" onchange="renderDB()">
+            <option value="">自製+外購</option>
+            <option value="自製品">自製品</option>
+            <option value="外購品">外購品</option>
+          </select>
+          <select id="fc" onchange="renderDB()">
+            <option value="">所有顏色</option>
+            <option value="黑">黑色系</option>
+            <option value="銀藍">銀藍色系</option>
+            <option value="淺銀">淺銀色系</option>
+          </select>
+          <select id="ff" onchange="renderDB()">
+            <option value="">所有工藝</option>
+            <option value="液烤">液烤</option>
+            <option value="粉烤">粉烤</option>
+          </select>
+          <select id="fcasing" onchange="renderDB()">
+            <option value="">所有機殼廠</option>
+          </select>
+          <select id="fphysical" style="display:none" onchange="renderDB()">
+            <option value="">全部</option>
+          </select>
+          <select id="fv" onchange="renderDB()">
+            <option value="">全部顯示</option>
+            <option value="recommend">建議對色</option>
+            <option value="old">⚠️ 逾3年</option>
+          </select>
+          <select id="fy" onchange="renderDB()"><option value="">所有年份</option></select>
+          <input type="text" id="search" placeholder="🔍  搜尋色名、Pantone、機殼廠、供應商..." oninput="renderDB()">
+        </div>
+        <div id="db-grid"></div>
+      </div>
+
+      <!-- 健康檢測頁 -->
+      <div id="page-health" class="page">
+        <div id="health-grid"></div>
+      </div>
+
+      <!-- 新增色板頁 -->
+      <div id="page-add" class="page">
+        <div class="form-wrap">
+          <div class="form-card">
+            <h3>基本資訊</h3>
+            <div class="form-grid">
+              <div class="form-group form-full">
+                <label>色板名稱 *</label>
+                <input type="text" id="f-name" placeholder="例：銀藍UF織紋">
+              </div>
+              <div class="form-group">
+                <label>顏色系列 *</label>
+                <select id="f-type">
+                  <option value="黑">黑色系</option>
+                  <option value="銀藍">銀藍色系</option>
+                  <option value="其他">其他</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>工藝 *</label>
+                <select id="f-finish">
+                  <option value="液烤">液烤</option>
+                  <option value="粉烤">粉烤</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Pantone 色號</label>
+                <input type="text" id="f-pantone" placeholder="例：Pantone 649C">
+              </div>
+              <div class="form-group">
+                <label>印刷色</label>
+                <input type="text" id="f-print" placeholder="例：Pantone 649C">
+              </div>
+              <div class="form-group">
+                <label>色板近似色</label>
+                <div class="color-input-row">
+                  <input type="color" id="f-hex" value="#3d4a5c">
+                  <input type="text" id="f-hex-text" value="#3d4a5c" placeholder="#3d4a5c" oninput="syncHex(this.value)">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>類型</label>
+                <select id="f-form">
+                  <option value="色板">色板</option>
+                  <option value="機殼面板">機殼面板</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <h3>來源資訊</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>日期 *</label>
+                <input type="text" id="f-date" placeholder="例：2026.05.12">
+              </div>
+              <div class="form-group">
+                <label>樣品數量</label>
+                <input type="text" id="f-sample" placeholder="例：標準x4">
+              </div>
+              <div class="form-group">
+                <label>自製/外購 *</label>
+                <select id="f-category">
+                  <option value="自製品">自製品</option>
+                  <option value="外購品">外購品</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>機殼廠 *</label>
+                <input type="text" id="f-casing" placeholder="例：奇吉(奇銘聖)、廷順、峻祥">
+              </div>
+              <div class="form-group">
+                <label>烤漆供應商</label>
+                <input type="text" id="f-vendor" placeholder="例：宜路發、威宏志">
+              </div>
+              <div class="form-group">
+                <label>產地</label>
+                <input type="text" id="f-origin" placeholder="例：大陸、台灣、東莞">
+              </div>
+              <div class="form-group" style="display:none">
+                <label>有無實體色板</label>
+                <select id="f-physical">
+                  <option value="1">有實體</option>
+                </select>
+              </div>
+              <div class="form-group form-full">
+                <label>備註</label>
+                <textarea id="f-note" placeholder="色差觀察、用途、注意事項..."></textarea>
+              </div>
+              <div class="form-group form-full">
+                <label>照片連結（Google Drive / Imgur）</label>
+                <input type="text" id="f-photo" placeholder="貼上圖片網址...">
+              </div>
+              <div class="form-group form-full">
+                <label class="form-check">
+                  <input type="checkbox" id="f-recommend">
+                  <span>設為此色系「建議對色用」（會取消同色系現有標記）</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-primary" onclick="addSample()">儲存色板</button>
+            <button class="btn" onclick="resetForm()">清除</button>
+            <span class="form-msg" id="add-msg"></span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content (trash page inside) -->
+
+      <!-- 垃圾桶頁 -->
+      <div id="page-trash" class="page" style="padding:28px 32px">
+        <div class="compare-banner" style="background:#fef3c7;border-color:#fcd34d;color:#92400e">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          <span>已刪除的色板保留於此，可隨時還原。清空後才會永久刪除。</span>
+          <button class="btn" style="margin-left:auto;color:#991b1b;border-color:#fca5a5" onclick="emptyTrash()">清空垃圾桶</button>
+        </div>
+        <div id="trash-grid"></div>
+      </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- 照片燈箱 -->
+<div id="lightbox" onclick="closeLightbox()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:2000;align-items:center;justify-content:center;cursor:zoom-out;backdrop-filter:blur(4px)">
+  <div onclick="event.stopPropagation()" style="position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center;gap:12px">
+    <img id="lightbox-img" src="" alt="" style="max-width:90vw;max-height:80vh;object-fit:contain;border-radius:10px;box-shadow:0 24px 80px rgba(0,0,0,0.6)">
+    <div id="lightbox-caption" style="color:rgba(255,255,255,0.75);font-size:13px;font-family:'Noto Sans TC',sans-serif;text-align:center;line-height:1.6;max-width:500px"></div>
+    <button onclick="closeLightbox()" style="position:absolute;top:-14px;right:-14px;width:32px;height:32px;border-radius:50%;border:none;background:rgba(255,255,255,0.15);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);transition:background 0.15s" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">×</button>
+  </div>
+</div>
+
+<!-- 自訂確認對話框 -->
+<div id="confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1000;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:12px;padding:24px;max-width:340px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.2)">
+    <div id="confirm-title" style="font-size:15px;font-weight:500;margin-bottom:8px;color:#1a1917"></div>
+    <div id="confirm-msg" style="font-size:13px;color:#5c5a56;margin-bottom:20px;line-height:1.6"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button id="confirm-cancel" style="padding:7px 16px;border-radius:6px;border:1px solid #d8d5ce;background:#fff;font-size:13px;cursor:pointer;font-family:inherit">取消</button>
+      <button id="confirm-ok" style="padding:7px 16px;border-radius:6px;border:none;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500"></button>
+    </div>
+  </div>
+</div>
+
+<script>
+// 欄位說明: id,name,pantone,finish,date,sample,casing(機殼廠),vendor(烤漆供應商),origin,hex,type,form,print,physical(1=實體/0=清單),note,recommend
+const SEED = [
+  // ── 奇吉(奇銘聖) ──
+  {id:1,name:"黑織紋",pantone:"Pantone Black C",finish:"液烤",date:"2022.12",sample:"標準x2",casing:"奇吉(奇銘聖)",category:"自製品",vendor:"",origin:"",hex:"#2c2c2a",type:"黑",form:"色板",print:"",physical:1,note:"",recommend:false},
+  {id:2,name:"黑織紋",pantone:"Pantone Black C",finish:"液烤",date:"2023.03",sample:"標準x2",casing:"奇吉(奇銘聖)",category:"自製品",vendor:"",origin:"東莞",hex:"#222222",type:"黑",form:"色板",print:"",physical:1,note:"",recommend:false},
+  {id:3,name:"Pantone 426U",pantone:"Pantone 426U",finish:"液烤",date:"2022.12",sample:"標準x4",casing:"奇吉(奇銘聖)",category:"自製品",vendor:"",origin:"",hex:"#3a3a3a",type:"黑",form:"色板",print:"",physical:1,note:"",recommend:false},
+  {id:4,name:"Pantone 426U",pantone:"Pantone 426U",finish:"液烤",date:"2023.03",sample:"標準x2",casing:"奇吉(奇銘聖)",category:"自製品",vendor:"",origin:"東莞",hex:"#333333",type:"黑",form:"色板",print:"",physical:1,note:"",recommend:false},
+  {id:5,name:"Pantone 426U",pantone:"Pantone 426U",finish:"液烤",date:"2020.06",sample:"標準x1",casing:"奇吉(奇銘聖)",category:"自製品",vendor:"",origin:"",hex:"#383838",type:"黑",form:"機殼面板",print:"",physical:1,note:"XT-705A-FSC實體樣品",recommend:false},
+  {id:6,name:"銀藍UF織紋",pantone:"—",finish:"粉烤",date:"2023.11.30",sample:"標準x3",casing:"奇吉(奇銘聖)",category:"自製品",vendor:"",origin:"",hex:"#3d4a5c",type:"銀藍",form:"色板",print:"",physical:1,note:"",recommend:false},
+  {id:7,name:"銀藍UF織紋/印刷色",pantone:"—",finish:"液烤",date:"2023.06.06",sample:"標準x2",casing:"奇吉(奇銘聖)",category:"自製品",vendor:"",origin:"台灣",hex:"#3c4a5c",type:"銀藍",form:"機殼面板",print:"",physical:1,note:"",recommend:false},
+  {id:8,name:"銀藍UF織紋/印刷色",pantone:"—",finish:"液烤",date:"2023.06.06",sample:"標準x2",casing:"奇吉(奇銘聖)",category:"自製品",vendor:"",origin:"大陸",hex:"#3c4a5c",type:"銀藍",form:"機殼面板",print:"",physical:1,note:"",recommend:false},
+  {id:9,name:"銀藍UF織紋",pantone:"—",finish:"液烤",date:"2024.10.30",sample:"標準x20",casing:"奇吉(奇銘聖)",category:"自製品",vendor:"",origin:"",hex:"#354257",type:"銀藍",form:"色板",print:"",physical:1,note:"",recommend:false},
+  {id:10,name:"銀藍UF織紋",pantone:"—",finish:"粉烤",date:"2025.09.18",sample:"標準x1",casing:"奇吉(奇銘聖)",category:"自製品",vendor:"",origin:"",hex:"#2e3d52",type:"銀藍",form:"色板",print:"",physical:1,note:"AkzoNel Interpon",recommend:false},
+  {id:11,name:"銀藍UF織紋",pantone:"—",finish:"粉烤",date:"2025.11.25",sample:"標準x1",casing:"奇吉(奇銘聖)",category:"自製品",vendor:"",origin:"",hex:"#2d3c50",type:"銀藍",form:"色板",print:"",physical:1,note:"",recommend:false},
+  {id:12,name:"銀藍UF織紋/印刷色",pantone:"—",finish:"液烤",date:"2026.05.12",sample:"標準x4",casing:"奇吉(奇銘聖)",category:"自製品",vendor:"",origin:"大陸",hex:"#384d65",type:"銀藍",form:"機殼面板",print:"Pantone 649C",physical:1,note:"",recommend:false},
+  {id:13,name:"黑織紋/印刷色",pantone:"—",finish:"液烤",date:"2026.05.12",sample:"標準x4",casing:"奇吉(奇銘聖)",category:"自製品",vendor:"",origin:"大陸",hex:"#282828",type:"黑",form:"機殼面板",print:"Pantone 649C",physical:1,note:"",recommend:false},
+  {id:14,name:"黑織紋Pantone Black C",pantone:"Pantone Black C",finish:"液烤",date:"2024.02.07",sample:"標準x1",casing:"奇吉(奇銘聖)",category:"自製品",vendor:"",origin:"",hex:"#1c1c1c",type:"黑",form:"機殼面板",print:"",physical:1,note:"ISW-500T-LUT實體樣品(LUTZE客戶)",recommend:false},
+  // ── 廷順(Timson) ──
+  {id:20,name:"淺銀UF織紋",pantone:"BAS-C02003",finish:"粉烤",date:"2024.03.18",sample:"標準x3",casing:"廷順(Timson)",category:"自製品",vendor:"廷順",origin:"台灣",hex:"#b8b5ae",type:"淺銀",form:"色板",print:"",physical:1,note:"廷順色號:BAS-C02003 粉體銀織紋",recommend:false},
+  {id:21,name:"銀藍UF織紋",pantone:"—",finish:"粉烤",date:"2024.09.26",sample:"標準x2",casing:"廷順(Timson)",category:"自製品",vendor:"",origin:"",hex:"#2f3e54",type:"銀藍",form:"色板",print:"",physical:1,note:"",recommend:false},
+  // ── 峻祥 ──
+  {id:30,name:"Pantone 426U",pantone:"Pantone 426U",finish:"液烤",date:"2011.06.14",sample:"標準x1",casing:"峻祥",category:"自製品",vendor:"",origin:"",hex:"#363636",type:"黑",form:"色板",print:"",physical:1,note:"",recommend:false},
+  {id:31,name:"銀藍UF織紋",pantone:"—",finish:"液烤",date:"2019.08.29",sample:"上限x2/中限x2/下限x1",casing:"峻祥",category:"自製品",vendor:"",origin:"",hex:"#344055",type:"銀藍",form:"色板",print:"",physical:1,note:"",recommend:false},
+  {id:32,name:"印刷色",pantone:"Pantone 649C",finish:"液烤",date:"2019.09.03",sample:"標準x1",casing:"峻祥",category:"自製品",vendor:"",origin:"",hex:"#354a66",type:"銀藍",form:"機殼面板",print:"Pantone 649C",physical:1,note:"黃貼紙標示色差不符待調整",recommend:false},
+  {id:33,name:"僅印刷色",pantone:"Pantone 649C",finish:"液烤",date:"2025.04.15",sample:"標準x1",casing:"峻祥",category:"自製品",vendor:"",origin:"",hex:"#354a66",type:"銀藍",form:"機殼面板",print:"Pantone 649C",physical:1,note:"奇吉、峻祥共用印刷色",recommend:false},
+  // ── 丞毅/烤漆:宜路發 ──
+  {id:40,name:"黑織紋",pantone:"Pantone Black C",finish:"液烤",date:"2023.04.21",sample:"標準x2",casing:"丞毅",category:"自製品",vendor:"宜路發",origin:"",hex:"#222220",type:"黑",form:"色板",print:"",physical:1,note:"黑細織紋 L25.55 a0.12 b-1.16",recommend:false},
+  {id:41,name:"銀藍UF織紋",pantone:"—",finish:"粉烤",date:"2023.12.19",sample:"標準x1",casing:"丞毅",category:"自製品",vendor:"宜路發",origin:"",hex:"#2f3e52",type:"銀藍",form:"色板",print:"",physical:1,note:"",recommend:false},
+  {id:42,name:"銀藍UF織紋",pantone:"—",finish:"粉烤",date:"2023.12.29",sample:"標準x1",casing:"丞毅",category:"自製品",vendor:"宜路發",origin:"",hex:"#2f3e52",type:"銀藍",form:"色板",print:"",physical:1,note:"",recommend:false},
+  // ── 湖南恆茂/Fullriver/盈澤 ──
+  {id:50,name:"Pantone Black 7C",pantone:"Pantone Black 7C",finish:"液烤",date:"2016.12",sample:"上限x1/下限x1",casing:"湖南恆茂/Fullriver/盈澤",category:"外購品",vendor:"威利來&威宏志",origin:"大陸",hex:"#1e1e1e",type:"黑",form:"色板",print:"",physical:1,note:"",recommend:false},
+  {id:51,name:"銀藍UF織紋",pantone:"—",finish:"液烤",date:"2019.03.01",sample:"上限x1/標準x1/下限x1",casing:"湖南恆茂/Fullriver/盈澤",category:"外購品",vendor:"威利來&威宏志",origin:"大陸",hex:"#354257",type:"銀藍",form:"色板",print:"",physical:1,note:"",recommend:false},
+  {id:52,name:"銀藍UF織紋",pantone:"—",finish:"液烤",date:"2019.05.27",sample:"上限x1/中限x1/下限x1",casing:"湖南恆茂/Fullriver/盈澤",category:"外購品",vendor:"鑫安達",origin:"大陸",hex:"#354257",type:"銀藍",form:"色板",print:"",physical:1,note:"",recommend:false},
+  {id:53,name:"銀藍UF織紋",pantone:"—",finish:"液烤",date:"2019.11.04",sample:"上限x1/中限x1/下限x1",casing:"湖南恆茂/Fullriver/盈澤",category:"外購品",vendor:"精欣隆",origin:"大陸",hex:"#354257",type:"銀藍",form:"機殼面板",print:"",physical:1,note:"印刷偏白",recommend:false},
+  {id:54,name:"銀藍UF織紋",pantone:"—",finish:"液烤",date:"2019",sample:"上限x1/中限x1/下限x1",casing:"湖南恆茂/Fullriver/盈澤",category:"外購品",vendor:"鑫安達",origin:"大陸",hex:"#354257",type:"銀藍",form:"色板",print:"",physical:1,note:"",recommend:false},
+  {id:55,name:"銀藍UF織紋",pantone:"—",finish:"粉烤",date:"2025.07.07",sample:"標準x2",casing:"湖南恆茂/Fullriver/盈澤",category:"外購品",vendor:"天冠國際",origin:"大陸",hex:"#2e3d52",type:"銀藍",form:"機殼面板",print:"",physical:1,note:"",recommend:false},
+  // ── 優力普/UNIPOE ──
+  {id:60,name:"Pantone Black 7C",pantone:"Pantone Black 7C",finish:"液烤",date:"2016.08.03",sample:"標準",casing:"優力普/UNIPOE",category:"外購品",vendor:"永權東",origin:"",hex:"#1e1e1e",type:"黑",form:"色板",print:"",physical:1,note:"",recommend:false},
+  {id:61,name:"Pantone Black 7C",pantone:"Pantone Black 7C",finish:"液烤",date:"2016.11.14",sample:"標準",casing:"優力普/UNIPOE",category:"外購品",vendor:"永權東",origin:"",hex:"#1e1e1e",type:"黑",form:"色板",print:"",physical:1,note:"",recommend:false},
+  {id:62,name:"Pantone Black 7C",pantone:"Pantone Black 7C",finish:"液烤",date:"2016.12",sample:"上限/中限/下限",casing:"優力普/UNIPOE",category:"外購品",vendor:"威利來&威宏志",origin:"",hex:"#1e1e1e",type:"黑",form:"色板",print:"",physical:1,note:"",recommend:false},
+  {id:63,name:"銀藍UF織紋",pantone:"—",finish:"液烤",date:"2019.05.11",sample:"上限/標準",casing:"優力普/UNIPOE",category:"外購品",vendor:"威利來&威宏志",origin:"",hex:"#354257",type:"銀藍",form:"色板",print:"",physical:1,note:"",recommend:false},
+  {id:64,name:"銀藍UF織紋",pantone:"—",finish:"液烤",date:"2019.08.02",sample:"上限/中限",casing:"優力普/UNIPOE",category:"外購品",vendor:"精欣隆",origin:"",hex:"#354257",type:"銀藍",form:"色板",print:"",physical:1,note:"",recommend:false},
+  {id:65,name:"Pantone Black 7C",pantone:"Pantone Black 7C",finish:"粉烤",date:"2024.09.11",sample:"標準x4",casing:"優力普/UNIPOE",category:"外購品",vendor:"威宏志",origin:"",hex:"#1e1e1e",type:"黑",form:"色板",print:"",physical:1,note:"",recommend:false},
+  {id:66,name:"黑織紋",pantone:"—",finish:"粉烤",date:"2024.10",sample:"上限/中限/下限",casing:"優力普/UNIPOE",category:"外購品",vendor:"",origin:"",hex:"#2a2a2a",type:"黑",form:"色板",print:"",physical:1,note:"",recommend:false},
+  {id:67,name:"Pantone 426U",pantone:"Pantone 426U",finish:"液烤",date:"2025.07.29",sample:"標準",casing:"優力普/UNIPOE",category:"外購品",vendor:"",origin:"",hex:"#383838",type:"黑",form:"色板",print:"",physical:1,note:"",recommend:false},
+  // ── 成都智科 ──
+  {id:70,name:"Pantone Black 7C",pantone:"Pantone Black 7C",finish:"液烤",date:"2017.04.14",sample:"標準",casing:"成都智科(IPX系列)",category:"外購品",vendor:"",origin:"",hex:"#1e1e1e",type:"黑",form:"色板",print:"",physical:1,note:"",recommend:false},
+  // ── 銓智科 ──
+  {id:71,name:"黑織紋",pantone:"—",finish:"液烤",date:"2017.07.21",sample:"標準",casing:"銓智科",category:"外購品",vendor:"",origin:"",hex:"#2a2a2a",type:"黑",form:"色板",print:"",physical:1,note:"",recommend:false},
+  // ── 智微智能 ──
+  {id:72,name:"銀藍UF織紋",pantone:"—",finish:"粉烤",date:"2020.07",sample:"標準",casing:"智微智能",category:"外購品",vendor:"",origin:"",hex:"#354257",type:"銀藍",form:"色板",print:"",physical:1,note:"",recommend:false},
+  // ── 博達/BD COM ──
+  {id:73,name:"銀藍UF織紋",pantone:"—",finish:"粉烤",date:"2022.09",sample:"標準",casing:"博達/BD COM",category:"外購品",vendor:"",origin:"",hex:"#354257",type:"銀藍",form:"色板",print:"",physical:1,note:"",recommend:false},
+  // ── 邁騰 ──
+  {id:74,name:"銀藍UF織紋",pantone:"—",finish:"粉烤",date:"2023.09.16",sample:"標準",casing:"邁騰",category:"外購品",vendor:"",origin:"",hex:"#354257",type:"銀藍",form:"色板",print:"",physical:1,note:"",recommend:false},
+  // ── 啟發 ──
+  {id:75,name:"Black(依廠商)",pantone:"—",finish:"粉烤",date:"2024.09.24",sample:"標準",casing:"啟發",category:"外購品",vendor:"",origin:"",hex:"#2a2a2a",type:"黑",form:"色板",print:"",physical:1,note:"",recommend:false},
+  // ── 洪瑞 ──
+  {id:76,name:"銀藍UF織紋",pantone:"—",finish:"粉烤",date:"2025.04.01",sample:"標準",casing:"洪瑞",category:"外購品",vendor:"",origin:"",hex:"#354257",type:"銀藍",form:"色板",print:"",physical:1,note:"",recommend:false},
+  // ── SmartByte ──
+  {id:77,name:"銀藍UF織紋",pantone:"—",finish:"粉烤",date:"2025.07.24",sample:"標準",casing:"SmartByte",category:"外購品",vendor:"",origin:"",hex:"#354257",type:"銀藍",form:"色板",print:"",physical:1,note:"",recommend:false},
+  // ── 廷順/廣翔/廣騰對色確認 ──
+  {id:80,name:"Pantone 426U 對色確認",pantone:"Pantone 426U",finish:"液烤",date:"2013.06.06",sample:"上x1/中x1/下x1",casing:"廷順/廣翔/廣騰",category:"自製品",vendor:"",origin:"",hex:"#383838",type:"黑",form:"色板",print:"",physical:1,note:"三廠對色確認",recommend:false},
+];
+
+const STORAGE_KEY = 'colordb_v10';
+let db = [], trash = [], nextId = 200;
+
+function autoRecommend(data) {
+  // 補上 photo 預設值
+  data.forEach(d => { if (!d.photo) d.photo = ''; });
+  // 每個「顏色系列 + 工藝」各自設一筆建議對色（日期最新）
+  const groups = [...new Set(data.map(d => d.type + '|' + d.finish))];
+  groups.forEach(key => {
+    const [type, finish] = key.split('|');
+    const g = data.filter(d => d.type === type && d.finish === finish && d.physical === 1).sort((a,b) => b.date.localeCompare(a.date));
+    g.forEach((d,i) => d.recommend = (i === 0));
+  });
+  return data;
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) { const p = JSON.parse(raw); db = p.db.map(d => ({photo:'', ...d})); trash = p.trash||[]; nextId = p.nextId; }
+    else { db = autoRecommend(JSON.parse(JSON.stringify(SEED))); trash = []; nextId = 50; persist(); }
+  } catch(e) { db = autoRecommend(JSON.parse(JSON.stringify(SEED))); trash = []; nextId = 50; }
+  buildYearFilter(); renderStats(); renderDB(); renderTrash(); updateTrashCount();
+}
+
+function persist() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({db, trash, nextId}));
+}
+
+function renderStats() {
+  const total = db.length;
+  const physical = db.filter(d => d.physical === 1).length;
+  const casings = [...new Set(db.map(d => d.casing).filter(Boolean))].length;
+  const years = [...new Set(db.map(d => d.date.slice(0,4)))].length;
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-card"><div class="stat-val" style="color:#3b82f6">${total}</div><div class="stat-lbl">總記錄數</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:#22c55e">${physical}</div><div class="stat-lbl">實體色板</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:#8b5cf6">${casings}</div><div class="stat-lbl">機殼廠數</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:#f97316">${years}</div><div class="stat-lbl">年份跨度</div></div>`;
+  // 更新側邊欄健康數字
+  const currentYear = new Date().getFullYear();
+  const green = db.filter(d => (currentYear - parseInt(d.date.slice(0,4))) < 2).length;
+  const yellow = db.filter(d => { const age = currentYear - parseInt(d.date.slice(0,4)); return age >= 2 && age < 3; }).length;
+  const red = db.filter(d => (currentYear - parseInt(d.date.slice(0,4))) >= 3).length;
+  const sbGreen = document.getElementById('sb-green');
+  const sbRed = document.getElementById('sb-red');
+  if (sbGreen) sbGreen.textContent = green + yellow;
+  if (sbRed) sbRed.textContent = red;
+}
+
+function buildYearFilter() {
+  const years = [...new Set(db.map(d => d.date.slice(0,4)))].sort().reverse();
+  document.getElementById('fy').innerHTML = '<option value="">所有年份</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
+  const casings = [...new Set(db.map(d => d.casing).filter(Boolean))]
+    .sort((a,b) => db.filter(d=>d.casing===b).length - db.filter(d=>d.casing===a).length);
+  document.getElementById('fcasing').innerHTML = '<option value="">所有機殼廠</option>' + casings.map(c => `<option value="${c}">${c}</option>`).join('');
+  buildSidebarCasings(casings);
+}
+
+function buildSidebarCasings(casings) {
+  const colors = ['#7eb8f7','#86efac','#fbbf24','#f9a8d4','#a5b4fc','#67e8f9','#6ee7b7','#fca5a5','#d8b4fe','#fed7aa','#bef264','#94a3b8','#fb923c'];
+  const el = document.getElementById('sidebar-casings');
+  if (!el) return;
+  const selfMade = casings.filter(c => {
+    const rec = db.find(d => d.casing === c);
+    return rec && rec.category === '自製品';
+  });
+  const purchased = casings.filter(c => {
+    const rec = db.find(d => d.casing === c);
+    return rec && rec.category === '外購品';
+  });
+  const other = casings.filter(c => !selfMade.includes(c) && !purchased.includes(c));
+  let html = '';
+  if (selfMade.length) {
+    html += `<div style="padding:12px 20px 6px 20px">
+      <span style="display:inline-block;background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;font-size:10px;font-weight:700;padding:3px 12px;border-radius:999px;letter-spacing:0.12em;text-transform:uppercase;box-shadow:0 2px 6px rgba(59,130,246,0.4)">自製品</span>
+    </div>`;
+    html += selfMade.map((c,i) => casingItem(c, i, colors)).join('');
+  }
+  if (purchased.length) {
+    html += `<div style="padding:12px 20px 6px 20px">
+      <span style="display:inline-block;background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;font-size:10px;font-weight:700;padding:3px 12px;border-radius:999px;letter-spacing:0.12em;text-transform:uppercase;box-shadow:0 2px 6px rgba(34,197,94,0.4)">外購品</span>
+    </div>`;
+    html += purchased.map((c,i) => casingItem(c, selfMade.length+i, colors)).join('');
+  }
+  if (other.length) {
+    html += `<div style="padding:10px 20px 4px 20px;font-size:10px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.08em">其他</div>`;
+    html += other.map((c,i) => casingItem(c, selfMade.length+purchased.length+i, colors)).join('');
+  }
+  el.innerHTML = html;
+}
+
+function casingItem(c, i, colors) {
+  return `<div class="casing-item" id="sc-${i}" data-casing="${c}" onclick="filterByCasing('${c.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}',${i})">
+    <div class="casing-dot" style="background:${colors[i%colors.length]}"></div>
+    <span style="overflow:hidden;text-overflow:ellipsis;flex:1">${c}</span>
+    <span style="font-size:10px;opacity:0.45;flex-shrink:0">${db.filter(d=>d.casing===c).length}</span>
+  </div>`;
+}
+
+function filterByCasing(casing, idx) {
+  document.querySelectorAll('.page').forEach(e => e.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
+  document.getElementById('page-db').classList.add('active');
+  document.querySelector('.nav-item').classList.add('active');
+  document.getElementById('topbar-title').textContent = casing;
+  document.querySelectorAll('.casing-item').forEach(e => e.classList.remove('active'));
+  const item = document.getElementById('sc-'+idx);
+  if (item) item.classList.add('active');
+  document.getElementById('fcasing').value = casing;
+  renderDB();
+  if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+}
+
+function renderDB() {
+  const fcat = document.getElementById('fcat').value;
+  const q = document.getElementById('search').value.toLowerCase();
+  const fc = document.getElementById('fc').value;
+  const ff = document.getElementById('ff').value;
+  const fv = document.getElementById('fv').value;
+  const fy = document.getElementById('fy').value;
+  const fcasing = document.getElementById('fcasing').value;
+  const fphysical = document.getElementById('fphysical').value;
+  const grid = document.getElementById('db-grid');
+
+  if (!fcasing) document.querySelectorAll('.casing-item').forEach(e => e.classList.remove('active'));
+
+  let filtered = db.filter(d => {
+    const txt = (d.name+d.pantone+d.print+d.note+d.origin+d.vendor+(d.casing||'')+d.date).toLowerCase();
+    if (fcat && d.category !== fcat) return false;
+    if (q && !txt.includes(q)) return false;
+    if (fc && !d.type.includes(fc)) return false;
+    if (ff && d.finish !== ff) return false;
+    if (fv === 'recommend' && !d.recommend) return false;
+    if (fv === 'old' && (new Date().getFullYear() - parseInt(d.date.slice(0,4))) < 3) return false;
+    if (fv === 'archived' && d.recommend) return false;
+    if (fy && !d.date.startsWith(fy)) return false;
+    if (fcasing && d.casing !== fcasing) return false;
+    if (fphysical === '1' && d.physical !== 1) return false;
+    if (fphysical === '0' && d.physical !== 0) return false;
+    return true;
+  }).sort((a,b) => {
+    // 銀藍/淺銀 在上，黑色系在下，同色系內日期新到舊
+    const typeOrder = (t) => t === '黑' ? 1 : 0;
+    if (typeOrder(a.type) !== typeOrder(b.type)) return typeOrder(a.type) - typeOrder(b.type);
+    return b.date.localeCompare(a.date);
+  });
+
+  if (!filtered.length) { grid.innerHTML = '<p class="empty">沒有符合條件的色板</p>'; return; }
+
+  // 按機殼廠筆數由多到少排序
+  const casingOrder = [...new Set(filtered.map(d => d.casing||'其他'))]
+    .sort((a,b) => filtered.filter(d=>(d.casing||'其他')===b).length - filtered.filter(d=>(d.casing||'其他')===a).length);
+  let html = '';
+  casingOrder.forEach((casing, ci) => {
+    const group = filtered.filter(d => (d.casing||'其他') === casing);
+    const currentYear = new Date().getFullYear();
+    const showGroup = fv === 'recommend' ? group.filter(d => d.recommend)
+      : fv === 'old' ? group.filter(d => (currentYear - parseInt(d.date.slice(0,4))) >= 3)
+      : group;
+    const casingCategory = group[0]?.category || '';
+    if (!showGroup.length) return;
+    const catTag = casingCategory === '自製品'
+      ? '<span style="font-size:10px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;padding:2px 10px;border-radius:999px;margin-left:8px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;box-shadow:0 2px 4px rgba(59,130,246,0.35)">自製品</span>'
+      : casingCategory === '外購品'
+      ? '<span style="font-size:10px;background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;padding:2px 10px;border-radius:999px;margin-left:8px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;box-shadow:0 2px 4px rgba(34,197,94,0.35)">外購品</span>'
+      : '';
+    html += `<div class="section-label" style="margin-top:${ci>0?'1.5rem':'0'}">
+      🏭 ${casing}${catTag}
+      <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:6px;text-transform:none;letter-spacing:0">${showGroup.length} 筆</span>
+    </div>`;
+    const blueGroup = showGroup.filter(d => d.type !== '黑');
+    const bluePowder = blueGroup.filter(d => d.finish === '粉烤');
+    const blueLiquid = blueGroup.filter(d => d.finish === '液烤');
+    const blackGroup = showGroup.filter(d => d.type === '黑');
+    if (blueGroup.length) {
+      html += `<div style="background:#fff;border-radius:var(--radius);padding:14px;margin-bottom:10px;border:1.5px solid #bfdbfe">`;
+      html += `<div style="font-size:14px;font-weight:500;color:#3b82f6;margin-bottom:12px;letter-spacing:0.02em">● 銀藍／淺銀色系</div>`;
+      if (bluePowder.length) {
+        html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span style="font-size:11px;font-weight:600;padding:2px 10px;border-radius:999px;background:var(--powder-bg);color:var(--powder);border:1px solid #c4b5fd;white-space:nowrap">粉烤</span>
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,#c4b5fd,transparent)"></div>
+        </div>`;
+        html += `<div class="grid" style="margin-bottom:${blueLiquid.length?'14px':'0'}">${bluePowder.map(cardHTML).join('')}</div>`;
+      }
+      if (blueLiquid.length) {
+        html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span style="font-size:11px;font-weight:600;padding:2px 10px;border-radius:999px;background:var(--liquid-bg);color:var(--liquid);border:1px solid #7dd3fc;white-space:nowrap">液烤</span>
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,#7dd3fc,transparent)"></div>
+        </div>`;
+        html += `<div class="grid">${blueLiquid.map(cardHTML).join('')}</div>`;
+      }
+      html += `</div>`;
+    }
+    if (blackGroup.length) {
+      html += `<div style="background:#fff;border-radius:var(--radius);padding:14px;margin-bottom:10px;border:1.5px solid #e5e7eb">`;
+      html += `<div style="font-size:14px;font-weight:500;color:#6b7280;margin-bottom:10px;letter-spacing:0.02em">● 黑色系</div>`;
+      html += `<div class="grid">${blackGroup.map(cardHTML).join('')}</div>`;
+      html += `</div>`;
+    }
+  });
+  grid.innerHTML = html;
+}
+
+function cardHTML(d) {
+  const finishStyle = d.finish === '粉烤'
+    ? 'background:var(--powder-bg);color:var(--powder);border:1px solid #c4b5fd'
+    : 'background:var(--liquid-bg);color:var(--liquid);border:1px solid #7dd3fc';
+  const sampleYear = parseInt(d.date.slice(0, 4));
+  const currentYear = new Date().getFullYear();
+  const isOld = (currentYear - sampleYear) >= 3;
+  const ageBadge = isOld
+    ? `<span class="badge" style="background:#fff7ed;color:#c2410c;border:1px solid #fdba74;font-size:11px">⚠️ 逾3年</span>`
+    : '';
+  const starStyle = d.recommend
+    ? 'color:#f59e0b;background:#fffbeb;border-color:#fde68a'
+    : 'color:#d1d5db;background:transparent;border-color:transparent';
+  const starTitle = d.recommend ? '取消建議' : '設為建議';
+  const borderStyle = d.finish === '粉烤' ? 'border-color:#c4b5fd' : 'border-color:#7dd3fc';
+  const typeBadge = `<span class="badge ${d.type==='黑'?'badge-dark':d.type==='淺銀'?'badge-gray':'badge-blue'}" style="font-size:12px;padding:2px 9px">${d.type==='黑'?'黑色系':d.type==='淺銀'?'淺銀色系':'銀藍色系'}</span>`;
+  const formBadge = d.photo
+    ? `<span class="badge badge-gray" style="font-size:12px;padding:2px 9px;cursor:pointer;border-color:#93c5fd;color:#2563eb" onclick="event.stopPropagation();openLightbox('${d.photo}','${d.name}　${d.casing}　${d.date}')" title="點擊查看實體照片">📷 ${d.form}</span>`
+    : `<span class="badge badge-gray" style="font-size:12px;padding:2px 9px">${d.form}</span>`;
+
+  return `<div class="card ${d.recommend?'is-recommend':''} ${d.type!=='黑'?'type-blue':'type-black'}" style="align-items:stretch;${borderStyle}">
+    <!-- 左側：色塊 + 工藝 + 照片 -->
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:6px;flex-shrink:0;padding-top:2px">
+      <div class="swatch" style="background:${d.hex};cursor:default"></div>
+      <span style="font-size:12px;font-weight:500;padding:2px 8px;border-radius:999px;${finishStyle}">${d.finish}</span>
+
+    </div>
+    <!-- 右側：內容 -->
+    <div class="card-body" style="display:flex;flex-direction:column;gap:6px">
+      <!-- 第一行：色名 + 標籤 + 星星 -->
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:6px">
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:5px;flex:1">
+          <span style="font-size:14px;font-weight:500">${d.name}</span>
+          ${ageBadge}
+        </div>
+        <button onclick="setRecommend(${d.id})" title="${starTitle}"
+          style="flex-shrink:0;width:26px;height:26px;border-radius:50%;border:1px solid;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all 0.15s;${starStyle}">★</button>
+      </div>
+      <!-- 第二行：資訊 -->
+      <div style="font-size:13px;color:var(--text2);line-height:1.7">
+        ${d.casing?`<span style="color:var(--text3)">機殼廠：</span>${d.casing}<br>`:''}
+        ${d.pantone&&d.pantone!=='—'?`<span style="color:var(--text3)">Pantone：</span>${d.pantone}<br>`:''}
+        ${d.print?`<span style="color:var(--text3)">印刷色：</span>${d.print}<br>`:''}
+        ${d.vendor?`<span style="color:var(--text3)">烤漆廠：</span>${d.vendor}<br>`:''}
+        <span style="color:var(--text3)">日期：</span>${d.date}${d.sample?`　<span style="color:var(--text3)">數量：</span>${d.sample}`:''}
+        ${d.note?`<br><span style="color:var(--text3);font-size:12px">${d.note}</span>`:''}
+      </div>
+      <!-- 第三行：標籤 + 刪除 -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:4px">
+        <div style="display:flex;gap:4px">${typeBadge}${formBadge}</div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <button class="btn btn-danger" style="font-size:11px;padding:3px 9px;height:26px" onclick="deleteSample(${d.id})">刪除</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function setRecommend(id) {
+  const t = db.find(d => d.id === id);
+  if (!t) return;
+  if (t.recommend) { t.recommend = false; }
+  else {
+    // 只取消同色系+同工藝的建議標記
+    db.filter(d => d.type === t.type && d.finish === t.finish).forEach(d => d.recommend = false);
+    t.recommend = true;
+  }
+  persist(); renderDB(); showToast(t.recommend ? '✓ 已設為建議對色用' : '已取消標記');
+}
+
+function renderHealth() {
+  const grid = document.getElementById('health-grid');
+  if (!grid) return;
+  const currentYear = new Date().getFullYear();
+
+  // 取最近30筆（依日期新到舊）
+  const top30 = [...db].sort((a,b) => b.date.localeCompare(a.date)).slice(0, 30);
+  const total = top30.length;
+  const green = top30.filter(d => (currentYear - parseInt(d.date.slice(0,4))) < 2).length;
+  const yellow = top30.filter(d => { const age = currentYear - parseInt(d.date.slice(0,4)); return age >= 2 && age < 3; }).length;
+  const red = top30.filter(d => (currentYear - parseInt(d.date.slice(0,4))) >= 3).length;
+
+  const casings = [...new Set(top30.map(d => d.casing).filter(Boolean))]
+    .sort((a,b) => top30.filter(d=>d.casing===b).length - top30.filter(d=>d.casing===a).length);
+
+  const good = green + yellow;
+
+  let html = `<div class="health-overview" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px">
+    <div class="health-stat health-stat-total"><div class="health-stat-val" style="color:#3b82f6">${total}</div><div style="font-size:13px;color:var(--text3);margin-top:6px">最近 30 筆</div></div>
+    <div class="health-stat health-stat-green"><div class="health-stat-val" style="color:#22c55e">${good}</div><div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:6px"><span style="font-size:22px">😊</span><span style="font-size:13px;color:var(--text3)">狀態良好</span></div></div>
+    <div class="health-stat health-stat-red" style="border-color:#e5e7eb"><div class="health-stat-val" style="color:#6b7280">${red}</div><div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:6px"><span style="font-size:22px">📋</span><span style="font-size:13px;color:var(--text3)">可申請新樣</span></div></div>
+  </div><div class="health-grid">`;
+
+  casings.forEach(casing => {
+    const group = top30.filter(d => d.casing === casing);
+    if (!group.length) return;
+    const hasRed = group.some(d => (currentYear - parseInt(d.date.slice(0,4))) >= 3);
+    const hasYellow = group.some(d => { const age = currentYear - parseInt(d.date.slice(0,4)); return age >= 2 && age < 3; });
+    const lampClass = hasRed ? 'lamp-red' : hasYellow ? 'lamp-yellow' : 'lamp-green';
+    const statusClass = hasRed ? 'status-red' : hasYellow ? 'status-yellow' : 'status-green';
+    const redCount = group.filter(d => (currentYear - parseInt(d.date.slice(0,4))) >= 3).length;
+    const yellowCount = group.filter(d => { const age = currentYear - parseInt(d.date.slice(0,4)); return age >= 2 && age < 3; }).length;
+    const summary = hasRed
+      ? `${redCount} 筆需更新${yellowCount?` · ${yellowCount} 筆即將到期`:''} / 共 ${group.length} 筆`
+      : hasYellow
+      ? `${yellowCount} 筆即將到期 / 共 ${group.length} 筆`
+      : `全部正常（${group.length} 筆）`;
+
+    const statusEmoji = hasRed ? '🔴' : hasYellow ? '🟡' : '🟢';
+    html += `<div class="health-card ${statusClass}">
+      <div class="health-card-header">
+        <div class="health-casing">${statusEmoji} ${casing}</div>
+      </div>
+      <div class="health-summary">${summary}</div>`;
+
+    group.forEach(d => {
+      const age = currentYear - parseInt(d.date.slice(0,4));
+      const dotEmoji = age >= 3 ? '🔴' : age >= 2 ? '🟡' : '🟢';
+      html += `<div class="health-row">
+        <span style="font-size:10px;line-height:1;flex-shrink:0">${dotEmoji}</span>
+        <div class="health-name">${d.name}${d.finish?` · ${d.finish}`:''}</div>
+        <div class="health-date">${d.date}</div>
+      </div>`;
+    });
+
+    html += `</div>`;
+  });
+
+  html += `</div>`;
+  grid.innerHTML = html;
+}
+
+function switchPage(p, el) {
+  document.querySelectorAll('.page').forEach(e => e.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  el.classList.add('active');
+  const titles = {db:'色板資料庫', health:'健康檢測', add:'新增色板', trash:'垃圾桶'};
+  document.getElementById('topbar-title').textContent = titles[p] || p;
+  if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+  if (p === 'trash') renderTrash();
+  if (p === 'health') renderHealth();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+function syncHex(v) {
+  if (/^#[0-9a-fA-F]{6}$/.test(v)) document.getElementById('f-hex').value = v;
+}
+document.addEventListener('change', e => {
+  if (e.target.id === 'f-hex') document.getElementById('f-hex-text').value = e.target.value;
+});
+
+function addSample() {
+  const name = document.getElementById('f-name').value.trim();
+  const date = document.getElementById('f-date').value.trim();
+  const type = document.getElementById('f-type').value;
+  const isRec = document.getElementById('f-recommend').checked;
+  const msg = document.getElementById('add-msg');
+  if (!name || !date) { msg.className = 'form-msg error'; msg.textContent = '請填寫色板名稱與日期'; return; }
+  if (isRec) db.filter(d => d.type === type && d.finish === document.getElementById('f-finish').value).forEach(d => d.recommend = false);
+  const s = {
+    id: nextId++, name,
+    pantone: document.getElementById('f-pantone').value.trim() || '—',
+    finish: document.getElementById('f-finish').value, date,
+    sample: document.getElementById('f-sample').value.trim(),
+    casing: document.getElementById('f-casing').value.trim(),
+    category: document.getElementById('f-category').value,
+    origin: document.getElementById('f-origin').value.trim(),
+    vendor: document.getElementById('f-vendor').value.trim(),
+    hex: document.getElementById('f-hex-text').value.trim() || document.getElementById('f-hex').value,
+    type, form: document.getElementById('f-form').value,
+    print: document.getElementById('f-print').value.trim(),
+    physical: parseInt(document.getElementById('f-physical').value),
+    note: document.getElementById('f-note').value.trim(),
+    photo: document.getElementById('f-photo').value.trim(),
+    recommend: isRec
+  };
+  db.unshift(s); persist(); buildYearFilter(); renderStats(); renderDB(); resetForm();
+  msg.className = 'form-msg success'; msg.textContent = '✓ 色板已儲存';
+  showToast('✓ 色板已新增：' + name);
+  setTimeout(() => msg.textContent = '', 4000);
+}
+
+function resetForm() {
+  ['f-name','f-pantone','f-date','f-sample','f-casing','f-origin','f-vendor','f-print','f-note','f-photo'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-hex').value = '#3d4a5c';
+  document.getElementById('f-hex-text').value = '#3d4a5c';
+  document.getElementById('f-category').value = '自製品';
+  document.getElementById('f-finish').value = '液烤';
+  document.getElementById('f-form').value = '色板';
+  document.getElementById('f-physical').value = '1';
+  document.getElementById('f-recommend').checked = false;
+}
+
+function showConfirm(title, msg, okLabel, okColor, onOk) {
+  const overlay = document.getElementById('confirm-overlay');
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-msg').textContent = msg;
+  const okBtn = document.getElementById('confirm-ok');
+  const cancelBtn = document.getElementById('confirm-cancel');
+  okBtn.textContent = okLabel;
+  okBtn.style.cssText = `padding:7px 16px;border-radius:6px;border:none;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500;background:${okColor};color:#fff`;
+  overlay.style.display = 'flex';
+  const close = () => { overlay.style.display = 'none'; };
+  const newOk = okBtn.cloneNode(true);
+  const newCancel = cancelBtn.cloneNode(true);
+  okBtn.parentNode.replaceChild(newOk, okBtn);
+  cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+  document.getElementById('confirm-ok').style.cssText = `padding:7px 16px;border-radius:6px;border:none;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500;background:${okColor};color:#fff`;
+  document.getElementById('confirm-ok').textContent = okLabel;
+  document.getElementById('confirm-ok').addEventListener('click', () => { close(); onOk(); });
+  document.getElementById('confirm-cancel').textContent = '取消';
+  document.getElementById('confirm-cancel').addEventListener('click', close);
+}
+
+function deleteSample(id) {
+  const target = db.find(d => d.id === id);
+  if (!target) return;
+  showConfirm(
+    '刪除色板',
+    `確定要刪除「${target.name}」？刪除後可在垃圾桶還原。`,
+    '移至垃圾桶', '#1a1917',
+    () => {
+      trash.unshift({...target, deletedAt: new Date().toLocaleDateString('zh-TW')});
+      db = db.filter(d => d.id !== id);
+      persist(); renderStats(); renderDB(); renderTrash(); updateTrashCount();
+      showToast('已移至垃圾桶，可還原');
+    }
+  );
+}
+
+function restoreSample(id) {
+  const target = trash.find(d => d.id === id);
+  if (!target) return;
+  const {deletedAt, ...restored} = target;
+  db.unshift(restored);
+  trash = trash.filter(d => d.id !== id);
+  persist(); buildYearFilter(); renderStats(); renderDB(); renderTrash(); updateTrashCount();
+  showToast('✓ 已還原：' + restored.name);
+}
+
+function emptyTrash() {
+  if (!trash.length) return;
+  showConfirm(
+    '清空垃圾桶',
+    `確定永久刪除垃圾桶內全部 ${trash.length} 筆色板？此操作無法復原。`,
+    '確定清空', '#991b1b',
+    () => {
+      trash = [];
+      persist(); renderTrash(); updateTrashCount();
+      showToast('垃圾桶已清空');
+    }
+  );
+}
+
+function renderTrash() {
+  const grid = document.getElementById('trash-grid');
+  if (!grid) return;
+  if (!trash.length) { grid.innerHTML = '<p class="empty">垃圾桶是空的</p>'; return; }
+  grid.innerHTML = `<div class="section-label">🗑 已刪除（${trash.length} 筆）</div><div class="grid">` +
+    trash.map(d => `
+      <div class="card" style="opacity:0.75">
+        <div class="swatch" style="background:${d.hex};cursor:default;filter:saturate(0.5)"></div>
+        <div class="card-body">
+          <div class="card-title">${d.name}</div>
+          <div class="card-meta">
+            ${d.vendor ? `<span>廠商：</span>${d.vendor}<br>` : ''}
+            <span>日期：</span>${d.date}　<span>工藝：</span>${d.finish}
+            <br><span style="color:var(--text3);font-size:11px">刪除於 ${d.deletedAt}</span>
+          </div>
+          <div class="card-badges">
+            <span class="badge ${d.type==='黑'?'badge-dark':'badge-blue'}">${d.type==='黑'?'黑色系':'銀藍色系'}</span>
+            <span class="badge ${d.finish==='粉烤'?'badge-powder':'badge-liquid'}">${d.finish}</span>
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-recommend" onclick="restoreSample(${d.id})">↩ 還原</button>
+            <button class="btn btn-danger" onclick="permanentDelete(${d.id})">永久刪除</button>
+          </div>
+        </div>
+      </div>`).join('') + '</div>';
+}
+
+function permanentDelete(id) {
+  const target = trash.find(d => d.id === id);
+  if (!target) return;
+  showConfirm(
+    '永久刪除',
+    `確定永久刪除「${target.name}」？此操作無法復原。`,
+    '永久刪除', '#991b1b',
+    () => {
+      trash = trash.filter(d => d.id !== id);
+      persist(); renderTrash(); updateTrashCount();
+      showToast('已永久刪除');
+    }
+  );
+}
+
+function updateTrashCount() {
+  const el = document.getElementById('trash-count');
+  if (!el) return;
+  if (trash.length > 0) { el.textContent = trash.length; el.style.display = 'inline'; }
+  else { el.style.display = 'none'; }
+}
+
+function exportCSV() {
+  const h = ['ID','名稱','Pantone','印刷色','機殼廠','烤漆供應商','工藝','日期','數量','產地','類型','顏色系','有實體','建議對色','照片連結','備註'];
+  const rows = db.map(d => [d.id,d.name,d.pantone,d.print,d.casing||'',d.vendor,d.finish,d.date,d.sample,d.origin,d.form,d.type,d.physical===1?'是':'否',d.recommend?'是':'否',d.photo||'',d.note]
+    .map(v => `"${(v||'').toString().replace(/"/g,'""')}"`).join(','));
+  const csv = '\uFEFF' + [h.join(','), ...rows].join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'}));
+  a.download = '色板資料庫_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+function openLightbox(url, caption) {
+  const lb = document.getElementById('lightbox');
+  const img = document.getElementById('lightbox-img');
+  const cap = document.getElementById('lightbox-caption');
+  img.src = url;
+  cap.textContent = caption || '';
+  lb.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  const lb = document.getElementById('lightbox');
+  lb.style.display = 'none';
+  document.getElementById('lightbox-img').src = '';
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+});
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+load();
+</script>
+</body>
+</html>
