@@ -903,10 +903,10 @@ function cardHTML(d) {
     : 'color:#d1d5db;background:transparent;border-color:transparent';
   const starTitle = d.recommend ? '取消建議' : '設為建議';
   const borderStyle = d.finish === '粉烤' ? 'border-color:#c4b5fd' : 'border-color:#7dd3fc';
-  const typeBadge = `<span class="badge ${d.type==='黑'?'badge-dark':d.type==='淺銀'?'badge-gray':'badge-blue'}" style="font-size:12px;padding:2px 9px">${d.type==='黑'?'黑色系':d.type==='淺銀'?'淺銀色系':'銀藍色系'}</span>`;
+  const typeBadge = `<span class="badge ${d.type==='黑'?'badge-dark':d.type==='淺銀'?'badge-gray':'badge-blue'}" style="font-size:13px;padding:3px 10px">${d.type==='黑'?'黑色系':d.type==='淺銀'?'淺銀色系':'銀藍色系'}</span>`;
   const formBadge = d.photo
-    ? `<span class="badge badge-gray" style="font-size:12px;padding:2px 9px;cursor:pointer;border-color:#93c5fd;color:#2563eb" onclick="event.stopPropagation();openLightbox('${d.photo}','${d.name}　${d.casing}　${d.date}')" title="點擊查看實體照片">📷 ${d.form}</span>`
-    : `<span class="badge badge-gray" style="font-size:12px;padding:2px 9px">${d.form}</span>`;
+    ? `<span class="badge badge-gray" style="font-size:13px;padding:3px 10px;cursor:pointer;border-color:#93c5fd;color:#2563eb" onclick="event.stopPropagation();openLightbox('${d.photo}','${d.name}　${d.casing}　${d.date}')" title="點擊查看實體照片"><span style="font-size:15px">📷</span> ${d.form}</span>`
+    : `<span class="badge badge-gray" style="font-size:13px;padding:3px 10px">${d.form}</span>`;
 
   return `<div class="card ${d.recommend?'is-recommend':''} ${d.type!=='黑'?'type-blue':'type-black'}" style="align-items:stretch;${borderStyle}">
     <!-- 左側：色塊 + 工藝 + 照片 -->
