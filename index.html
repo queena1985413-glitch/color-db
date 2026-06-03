@@ -373,9 +373,8 @@ body {
 <div class="app">
   <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo" style="padding:8px 16px 6px;text-align:center;background:transparent">
-      <img src="https://raw.githubusercontent.com/queena1985413-glitch/color-db/main/logo-white.png" alt="PLANET" style="width:100%;max-width:150px;display:block;margin:0 auto 4px;background:transparent;mix-blend-mode:normal">
-      <p style="font-size:11px;opacity:0.45;margin:0">色板管理系統</p>
+    <div class="sidebar-logo" style="padding:8px 16px 6px;text-align:left;background:transparent">
+      <img src="https://raw.githubusercontent.com/queena1985413-glitch/color-db/main/logo-white.png" alt="PLANET" style="width:100%;max-width:150px;display:block;margin:0 0 4px 0;background:transparent;mix-blend-mode:normal">
     </div>
     <nav class="sidebar-nav">
       <div class="nav-item active" onclick="switchPage('db',this)">
@@ -397,19 +396,6 @@ body {
       <div style="padding:16px 20px 6px;font-size:10px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.1em">機殼廠</div>
       <div id="sidebar-casings"></div>
     </nav>
-      <div style="padding:12px 16px;border-top:1px solid rgba(255,255,255,0.08);margin-top:8px">
-        <div style="font-size:10px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px">健康檢測</div>
-        <div style="display:flex;gap:8px">
-          <div style="flex:1;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.25);border-radius:8px;padding:8px 10px;text-align:center">
-            <div style="font-size:18px;font-weight:500;color:#4ade80" id="sb-green">—</div>
-            <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px">😊 狀態良好</div>
-          </div>
-          <div style="flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 10px;text-align:center">
-            <div style="font-size:18px;font-weight:500;color:rgba(255,255,255,0.6)" id="sb-red">—</div>
-            <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px">📋 可申請新樣</div>
-          </div>
-        </div>
-      </div>
     <div class="sidebar-footer" style="display:flex;align-items:center;justify-content:space-between"><span>v2.0 · 2026</span><span onclick="if(confirm('清除本機資料並重新載入？')){localStorage.removeItem('colordb_v10');location.reload();}" style="font-size:10px;color:rgba(255,255,255,0.3);cursor:pointer;padding:2px 6px;border-radius:4px;border:1px solid rgba(255,255,255,0.1)" title="清除快取">重置</span></div>
   </aside>
 
