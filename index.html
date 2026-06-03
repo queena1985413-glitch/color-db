@@ -394,10 +394,9 @@ body {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
         垃圾桶 <span id="trash-count" style="margin-left:auto;background:rgba(255,255,255,0.15);border-radius:999px;padding:1px 7px;font-size:11px;display:none"></span>
       </div>
-      <div style="padding:16px 20px 6px 12px;display:flex;align-items:center;gap:8px">
-        <div style="width:3px;height:14px;background:#3b82f6;border-radius:2px;flex-shrink:0"></div>
-        <span style="font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:0.12em;text-transform:uppercase;font-weight:600">廠商列表</span>
-        <div style="flex:1;height:1px;background:rgba(59,130,246,0.2)"></div>
+      <div style="padding:16px 20px 8px 16px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:11px;color:rgba(255,255,255,0.6);letter-spacing:0.12em;text-transform:uppercase;font-weight:700">廠商列表</span>
+        <div style="flex:1;height:1px;background:rgba(255,255,255,0.12)"></div>
       </div>
       <div id="sidebar-casings"></div>
     </nav>
@@ -750,18 +749,16 @@ function buildSidebarCasings(casings) {
   const other = casings.filter(c => !selfMade.includes(c) && !purchased.includes(c));
   let html = '';
   if (selfMade.length) {
-    html += `<div style="padding:14px 20px 5px 12px;display:flex;align-items:center;gap:8px">
-      <div style="width:3px;height:14px;background:#3b82f6;border-radius:2px;flex-shrink:0"></div>
-      <span style="font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:0.12em;text-transform:uppercase;font-weight:600">自製品</span>
-      <div style="flex:1;height:1px;background:rgba(59,130,246,0.2)"></div>
+    html += `<div style="padding:8px 20px 4px 24px;display:flex;align-items:center;gap:6px">
+      <div style="width:2px;height:10px;background:#3b82f6;border-radius:2px;flex-shrink:0"></div>
+      <span style="font-size:10px;color:#60a5fa;letter-spacing:0.1em;text-transform:uppercase;font-weight:600">自製品</span>
     </div>`;
     html += selfMade.map((c,i) => casingItem(c, i, colors)).join('');
   }
   if (purchased.length) {
-    html += `<div style="padding:14px 20px 5px 12px;display:flex;align-items:center;gap:8px">
-      <div style="width:3px;height:14px;background:#22c55e;border-radius:2px;flex-shrink:0"></div>
-      <span style="font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:0.12em;text-transform:uppercase;font-weight:600">外購品</span>
-      <div style="flex:1;height:1px;background:rgba(34,197,94,0.2)"></div>
+    html += `<div style="padding:8px 20px 4px 24px;display:flex;align-items:center;gap:6px">
+      <div style="width:2px;height:10px;background:#22c55e;border-radius:2px;flex-shrink:0"></div>
+      <span style="font-size:10px;color:#4ade80;letter-spacing:0.1em;text-transform:uppercase;font-weight:600">外購品</span>
     </div>`;
     html += purchased.map((c,i) => casingItem(c, selfMade.length+i, colors)).join('');
   }
