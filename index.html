@@ -899,7 +899,7 @@ function cardHTML(d) {
   const typeLabel = d.type==='黑'?'黑色系':d.type==='淺銀'?'淺銀色系':'銀藍色系';
   const typeClass = d.type==='黑'?'badge-dark':d.type==='淺銀'?'badge-gray':'badge-blue';
   const formBadge = d.photo
-    ? `<span class="badge badge-gray" style="font-size:13px;padding:3px 10px;cursor:pointer;background:#eff6ff;border-color:#93c5fd;color:#2563eb" onclick="event.stopPropagation();openLightbox('${d.photo}','${d.name}　${d.casing}　${d.date}')" title="點擊查看實體照片">📷 ${typeLabel}｜${d.form}</span>`
+    ? `<span class="badge badge-gray" style="font-size:13px;padding:3px 10px;cursor:pointer;background:#eff6ff;border-color:#93c5fd;color:#2563eb;display:inline-flex;align-items:center;gap:4px" onclick="event.stopPropagation();openLightbox('${d.photo}','${d.name}　${d.casing}　${d.date}')" title="點擊查看實體照片"><span style="font-size:14px;line-height:1">📷</span>${typeLabel}｜${d.form}</span>`
     : `<span class="badge ${typeClass}" style="font-size:13px;padding:3px 10px">${typeLabel}｜${d.form}</span>`;
   const typeBadge = '';
 
