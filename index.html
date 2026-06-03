@@ -109,7 +109,7 @@ body {
   display: flex; align-items: center; gap: 12px;
   box-shadow: 0 1px 0 rgba(0,0,0,0.06);
 }
-.topbar-title { font-size: 16px; font-weight: 600; flex: 1; color: var(--text); letter-spacing: -0.01em; }
+.topbar-title { font-size: 16px; font-weight: 600; flex: 1; color: var(--text); letter-spacing: 0.06em; }
 .content { padding: 28px 32px; }
 
 /* Stats */
@@ -896,10 +896,12 @@ function cardHTML(d) {
     : 'color:#d1d5db;background:transparent;border-color:transparent';
   const starTitle = d.recommend ? '取消建議' : '設為建議';
   const borderStyle = d.finish === '粉烤' ? 'border-color:#c4b5fd' : 'border-color:#7dd3fc';
-  const typeBadge = `<span class="badge ${d.type==='黑'?'badge-dark':d.type==='淺銀'?'badge-gray':'badge-blue'}" style="font-size:13px;padding:3px 10px">${d.type==='黑'?'黑色系':d.type==='淺銀'?'淺銀色系':'銀藍色系'}</span>`;
+  const typeLabel = d.type==='黑'?'黑色系':d.type==='淺銀'?'淺銀色系':'銀藍色系';
+  const typeClass = d.type==='黑'?'badge-dark':d.type==='淺銀'?'badge-gray':'badge-blue';
   const formBadge = d.photo
-    ? `<span class="badge badge-gray" style="font-size:13px;padding:3px 10px;cursor:pointer;border-color:#93c5fd;color:#2563eb" onclick="event.stopPropagation();openLightbox('${d.photo}','${d.name}　${d.casing}　${d.date}')" title="點擊查看實體照片"><span style="font-size:16px">🔍</span> ${d.form}</span>`
-    : `<span class="badge badge-gray" style="font-size:13px;padding:3px 10px">${d.form}</span>`;
+    ? `<span class="badge ${typeClass}" style="font-size:13px;padding:3px 10px;cursor:pointer;border-color:#93c5fd;color:#2563eb" onclick="event.stopPropagation();openLightbox('${d.photo}','${d.name}　${d.casing}　${d.date}')" title="點擊查看實體照片"><span style="font-size:16px">🔍</span> ${typeLabel}・${d.form}</span>`
+    : `<span class="badge ${typeClass}" style="font-size:13px;padding:3px 10px">${typeLabel}・${d.form}</span>`;
+  const typeBadge = '';
 
   return `<div class="card ${d.recommend?'is-recommend':''} ${d.type!=='黑'?'type-blue':'type-black'}" style="align-items:stretch;${borderStyle}">
     <!-- 左側：色塊 + 工藝 + 照片 -->
