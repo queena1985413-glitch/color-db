@@ -179,17 +179,7 @@ body {
   display: flex; gap: 14px; align-items: flex-start;
   box-shadow: 0 1px 3px rgba(0,0,0,0.06);
   transition: all 0.2s ease;
-  position: relative;
-  overflow: hidden;
 }
-.card::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 4px;
-}
-.card.type-blue::before { background: #3b82f6; }
-.card.type-black::before { background: #4b5563; }
 .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); transform: translateY(-1px); }
 .card.is-recommend { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.08); }
 
