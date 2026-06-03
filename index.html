@@ -127,8 +127,8 @@ body {
 }
 .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
 .stat-icon { width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.stat-val { font-size: 30px; font-weight: 500; font-family: 'DM Mono', monospace; color: var(--accent); line-height: 1; }
-.stat-lbl { font-size: 12px; color: var(--text3); margin-top: 4px; }
+.stat-val { font-size: 40px; font-weight: 500; font-family: 'DM Mono', monospace; color: var(--accent); line-height: 1; }
+.stat-lbl { font-size: 14px; color: var(--text2); margin-top: 4px; font-weight: 500; }
 
 /* Toolbar */
 .toolbar {
@@ -168,28 +168,37 @@ body {
 .section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
 
 /* Grid */
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
 
 /* Card */
 .card {
   background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
   display: flex; gap: 14px; align-items: flex-start;
-  box-shadow: var(--shadow);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
   transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
-.card:hover { box-shadow: var(--shadow-md); border-color: var(--border2); transform: translateY(-1px); transition: all 0.2s ease; }
-.card.is-recommend { border: 2px solid #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1), var(--shadow); }
-.card.is-recommend:hover { box-shadow: 0 0 0 4px rgba(59,130,246,0.2), 0 0 20px rgba(59,130,246,0.25), var(--shadow-md); transform: translateY(-2px); }
+.card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+}
+.card.type-blue::before { background: #3b82f6; }
+.card.type-black::before { background: #4b5563; }
+.card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); transform: translateY(-1px); }
+.card.is-recommend { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.08); }
 
 .swatch {
-  width: 56px; height: 56px;
-  border-radius: var(--radius-sm);
-  border: 1.5px solid rgba(0,0,0,0.08);
+  width: 64px; height: 64px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.08);
   flex-shrink: 0;
-  box-shadow: inset 0 1px 2px rgba(255,255,255,0.15), 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 }
 
 .card-body { flex: 1; min-width: 0; }
@@ -714,29 +723,29 @@ function renderStats() {
   const casings = [...new Set(db.map(d => d.casing).filter(Boolean))].length;
   const years = [...new Set(db.map(d => d.date.slice(0,4)))].length;
   document.getElementById('stats-row').innerHTML = `
-    <div class="stat-card" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border-color:#bfdbfe">
-      <div class="stat-icon" style="background:#fff;box-shadow:0 2px 8px rgba(59,130,246,0.2)">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#eff6ff;box-shadow:0 2px 8px rgba(59,130,246,0.15)">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
       </div>
-      <div style="flex:1"><div class="stat-val" style="color:#3b82f6">${total}</div><div class="stat-lbl" style="color:#1e40af">總記錄數</div></div>
+      <div style="flex:1"><div class="stat-val" style="color:#3b82f6">${total}</div><div class="stat-lbl">總記錄數</div></div>
     </div>
-    <div class="stat-card" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-color:#bbf7d0">
-      <div class="stat-icon" style="background:#fff;box-shadow:0 2px 8px rgba(34,197,94,0.2)">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#f0fdf4;box-shadow:0 2px 8px rgba(34,197,94,0.15)">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
       </div>
-      <div style="flex:1"><div class="stat-val" style="color:#22c55e">${physical}</div><div class="stat-lbl" style="color:#15803d">實體色板</div></div>
+      <div style="flex:1"><div class="stat-val" style="color:#22c55e">${physical}</div><div class="stat-lbl">實體色板</div></div>
     </div>
-    <div class="stat-card" style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);border-color:#ddd6fe">
-      <div class="stat-icon" style="background:#fff;box-shadow:0 2px 8px rgba(139,92,246,0.2)">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#f5f3ff;box-shadow:0 2px 8px rgba(139,92,246,0.15)">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
       </div>
-      <div style="flex:1"><div class="stat-val" style="color:#8b5cf6">${casings}</div><div class="stat-lbl" style="color:#6d28d9">機殼廠數</div></div>
+      <div style="flex:1"><div class="stat-val" style="color:#8b5cf6">${casings}</div><div class="stat-lbl">機殼廠數</div></div>
     </div>
-    <div class="stat-card" style="background:linear-gradient(135deg,#fff7ed,#ffedd5);border-color:#fed7aa">
-      <div class="stat-icon" style="background:#fff;box-shadow:0 2px 8px rgba(249,115,22,0.2)">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fff7ed;box-shadow:0 2px 8px rgba(249,115,22,0.15)">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       </div>
-      <div style="flex:1"><div class="stat-val" style="color:#f97316">${years}</div><div class="stat-lbl" style="color:#c2410c">年份跨度</div></div>
+      <div style="flex:1"><div class="stat-val" style="color:#f97316">${years}</div><div class="stat-lbl">年份跨度</div></div>
     </div>`;
   // 更新側邊欄健康數字
   const currentYear = new Date().getFullYear();
@@ -880,14 +889,14 @@ function renderDB() {
       html += `<div style="background:#fff;border-radius:var(--radius);padding:14px;margin-bottom:10px;border:1.5px solid #bfdbfe">`;
       html += `<div style="font-size:14px;font-weight:500;color:#3b82f6;margin-bottom:12px;letter-spacing:0.02em">● 銀藍／淺銀色系</div>`;
       if (bluePowder.length) {
-        html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
           <span style="font-size:11px;font-weight:600;padding:2px 10px;border-radius:999px;background:var(--powder-bg);color:var(--powder);border:1px solid #c4b5fd;white-space:nowrap">粉烤</span>
           <div style="flex:1;height:1px;background:linear-gradient(90deg,#c4b5fd,transparent)"></div>
         </div>`;
-        html += `<div class="grid" style="margin-bottom:${blueLiquid.length?'14px':'0'}">${bluePowder.map(cardHTML).join('')}</div>`;
+        html += `<div class="grid" style="margin-bottom:${blueLiquid.length?'20px':'0'}">${bluePowder.map(cardHTML).join('')}</div>`;
       }
       if (blueLiquid.length) {
-        html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
           <span style="font-size:11px;font-weight:600;padding:2px 10px;border-radius:999px;background:var(--liquid-bg);color:var(--liquid);border:1px solid #7dd3fc;white-space:nowrap">液烤</span>
           <div style="flex:1;height:1px;background:linear-gradient(90deg,#7dd3fc,transparent)"></div>
         </div>`;
@@ -898,7 +907,22 @@ function renderDB() {
     if (blackGroup.length) {
       html += `<div style="background:#fff;border-radius:var(--radius);padding:14px;margin-bottom:10px;border:1.5px solid #e5e7eb">`;
       html += `<div style="font-size:14px;font-weight:500;color:#6b7280;margin-bottom:10px;letter-spacing:0.02em">● 黑色系</div>`;
-      html += `<div class="grid">${blackGroup.map(cardHTML).join('')}</div>`;
+      const blackPowder = blackGroup.filter(d => d.finish === '粉烤');
+      const blackLiquid = blackGroup.filter(d => d.finish === '液烤');
+      if (blackPowder.length) {
+        html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span style="font-size:11px;font-weight:600;padding:2px 10px;border-radius:999px;background:var(--powder-bg);color:var(--powder);border:1px solid #c4b5fd;white-space:nowrap">粉烤</span>
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,#c4b5fd,transparent)"></div>
+        </div>`;
+        html += `<div class="grid" style="margin-bottom:${blackLiquid.length?'20px':'0'}">${blackPowder.map(cardHTML).join('')}</div>`;
+      }
+      if (blackLiquid.length) {
+        html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span style="font-size:11px;font-weight:600;padding:2px 10px;border-radius:999px;background:var(--liquid-bg);color:var(--liquid);border:1px solid #7dd3fc;white-space:nowrap">液烤</span>
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,#7dd3fc,transparent)"></div>
+        </div>`;
+        html += `<div class="grid">${blackLiquid.map(cardHTML).join('')}</div>`;
+      }
       html += `</div>`;
     }
   });
@@ -919,7 +943,7 @@ function cardHTML(d) {
     ? 'color:#f59e0b;background:#fffbeb;border-color:#fde68a'
     : 'color:#d1d5db;background:transparent;border-color:transparent';
   const starTitle = d.recommend ? '取消建議' : '設為建議';
-  const borderStyle = d.finish === '粉烤' ? 'border-color:#c4b5fd' : 'border-color:#7dd3fc';
+  const borderStyle = d.finish === '粉烤' ? 'border-color:#e9d5ff' : 'border-color:#bfdbfe';
   const typeLabel = d.type==='黑'?'黑色系':d.type==='淺銀'?'淺銀色系':'銀藍色系';
   const typeClass = d.type==='黑'?'badge-dark':d.type==='淺銀'?'badge-gray':'badge-blue';
   const formBadge = d.photo
