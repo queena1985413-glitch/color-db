@@ -746,18 +746,18 @@ function buildSidebarCasings(casings) {
   const other = casings.filter(c => !selfMade.includes(c) && !purchased.includes(c));
   let html = '';
   if (selfMade.length) {
-    html += `<div style="padding:14px 20px 5px 20px;display:flex;align-items:center;gap:8px">
-      <div style="height:1px;width:10px;background:rgba(255,255,255,0.15)"></div>
-      <span style="font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:0.12em;text-transform:uppercase">自製品</span>
-      <div style="flex:1;height:1px;background:rgba(255,255,255,0.08)"></div>
+    html += `<div style="padding:14px 20px 5px 12px;display:flex;align-items:center;gap:8px">
+      <div style="width:3px;height:14px;background:#3b82f6;border-radius:2px;flex-shrink:0"></div>
+      <span style="font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:0.12em;text-transform:uppercase;font-weight:600">自製品</span>
+      <div style="flex:1;height:1px;background:rgba(59,130,246,0.2)"></div>
     </div>`;
     html += selfMade.map((c,i) => casingItem(c, i, colors)).join('');
   }
   if (purchased.length) {
-    html += `<div style="padding:14px 20px 5px 20px;display:flex;align-items:center;gap:8px">
-      <div style="height:1px;width:10px;background:rgba(255,255,255,0.15)"></div>
-      <span style="font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:0.12em;text-transform:uppercase">外購品</span>
-      <div style="flex:1;height:1px;background:rgba(255,255,255,0.08)"></div>
+    html += `<div style="padding:14px 20px 5px 12px;display:flex;align-items:center;gap:8px">
+      <div style="width:3px;height:14px;background:#22c55e;border-radius:2px;flex-shrink:0"></div>
+      <span style="font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:0.12em;text-transform:uppercase;font-weight:600">外購品</span>
+      <div style="flex:1;height:1px;background:rgba(34,197,94,0.2)"></div>
     </div>`;
     html += purchased.map((c,i) => casingItem(c, selfMade.length+i, colors)).join('');
   }
