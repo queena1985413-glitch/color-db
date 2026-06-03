@@ -460,7 +460,7 @@ body {
             <option value="old">⚠️ 逾3年</option>
           </select>
           <select id="fy" onchange="renderDB()"><option value="">所有年份</option></select>
-          <button id="btn-old" onclick="toggleOld()" style="font-size:13px;padding:0 12px;height:36px;border-radius:6px;border:1.5px solid var(--border);background:var(--bg);color:var(--text-muted);cursor:pointer;white-space:nowrap;line-height:1">顯示舊色板</button>
+          <button id="btn-old" onclick="toggleOld()" style="font-size:13px;padding:0 12px;height:36px;border-radius:6px;border:1.5px solid var(--border);background:var(--bg);color:var(--text-muted);cursor:pointer;white-space:nowrap;line-height:1;display:inline-flex;align-items:center;gap:6px"><span id="btn-old-check" style="width:14px;height:14px;border:1.5px solid #9ca3af;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0"></span>顯示舊色板</button>
           <input type="text" id="search" placeholder="🔍  搜尋色名、Pantone、機殼廠、供應商..." oninput="renderDB()">
         </div>
         <div id="db-grid"></div>
@@ -1232,10 +1232,17 @@ let showOld = false;
 function toggleOld() {
   showOld = !showOld;
   const btn = document.getElementById('btn-old');
-  btn.style.background = showOld ? 'var(--accent)' : 'var(--surface)';
-  btn.style.color = showOld ? '#fff' : 'var(--text-muted)';
+  const check = document.getElementById('btn-old-check');
+  check.textContent = showOld ? '✓' : '';
+  check.style.background = showOld ? 'var(--accent)' : '';
+  check.style.borderColor = showOld ? 'var(--accent)' : '#9ca3af';
+  check.style.color = '#fff';
+  btn.textContent = '';
+  btn.appendChild(check);
+  btn.appendChild(document.createTextNode('顯示舊色板'));
+  btn.style.background = showOld ? 'var(--bg)' : 'var(--bg)';
+  btn.style.color = showOld ? 'var(--text)' : 'var(--text-muted)';
   btn.style.borderColor = showOld ? 'var(--accent)' : 'var(--border)';
-  btn.textContent = showOld ? '顯示舊色板 ✓' : '顯示舊色板';
   renderDB();
 }
 
