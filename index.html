@@ -394,7 +394,11 @@ body {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
         垃圾桶 <span id="trash-count" style="margin-left:auto;background:rgba(255,255,255,0.15);border-radius:999px;padding:1px 7px;font-size:11px;display:none"></span>
       </div>
-      <div style="padding:16px 20px 6px;font-size:10px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.1em">機殼廠</div>
+      <div style="padding:16px 20px 6px 12px;display:flex;align-items:center;gap:8px">
+        <div style="width:3px;height:14px;background:#3b82f6;border-radius:2px;flex-shrink:0"></div>
+        <span style="font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:0.12em;text-transform:uppercase;font-weight:600">廠商列表</span>
+        <div style="flex:1;height:1px;background:rgba(59,130,246,0.2)"></div>
+      </div>
       <div id="sidebar-casings"></div>
     </nav>
     <div class="sidebar-footer" style="display:flex;align-items:center;justify-content:space-between"><span>v2.0 · 2026</span><span onclick="if(confirm('清除本機資料並重新載入？')){localStorage.removeItem('colordb_v10');location.reload();}" style="font-size:10px;color:rgba(255,255,255,0.3);cursor:pointer;padding:2px 6px;border-radius:4px;border:1px solid rgba(255,255,255,0.1)" title="清除快取">重置</span></div>
