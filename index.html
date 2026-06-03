@@ -862,13 +862,10 @@ function renderDB() {
       : group;
     const casingCategory = group[0]?.category || '';
     if (!showGroup.length) return;
-    const catTag = casingCategory === '自製品'
-      ? '<span style="font-size:10px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;padding:2px 10px;border-radius:999px;margin-left:8px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;box-shadow:0 2px 4px rgba(59,130,246,0.35)">自製品</span>'
-      : casingCategory === '外購品'
-      ? '<span style="font-size:10px;background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;padding:2px 10px;border-radius:999px;margin-left:8px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;box-shadow:0 2px 4px rgba(34,197,94,0.35)">外購品</span>'
-      : '';
+    const catLabel = casingCategory || '';
+    const catColor = casingCategory === '自製品' ? '#3b82f6' : casingCategory === '外購品' ? '#16a34a' : 'var(--text3)';
     html += `<div class="section-label" style="margin-top:${ci>0?'1.5rem':'0'}">
-      🏭 ${casing}${catTag}
+      🏭 ${casing}${catLabel ? `<span style="color:var(--text3);margin:0 2px">｜</span><span style="color:${catColor};font-weight:500">${catLabel}</span>` : ''}
       <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:6px;text-transform:none;letter-spacing:0">${showGroup.length} 筆</span>
     </div>`;
     const blueGroup = showGroup.filter(d => d.type !== '黑');
@@ -877,7 +874,7 @@ function renderDB() {
     const blackGroup = showGroup.filter(d => d.type === '黑');
     if (blueGroup.length) {
       html += `<div style="background:#fff;border-radius:var(--radius);padding:14px;margin-bottom:10px;border:1.5px solid #bfdbfe">`;
-      html += `<div style="font-size:14px;font-weight:500;color:#3b82f6;margin-bottom:12px;letter-spacing:0.02em">● 銀藍／淺銀色系</div>`;
+      html += `<div style="font-size:14px;font-weight:500;color:#1f2937;margin-bottom:12px;letter-spacing:0.02em">銀藍／淺銀色系</div>`;
       if (bluePowder.length) {
         html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
           <span style="font-size:11px;font-weight:600;padding:2px 10px;border-radius:999px;background:var(--powder-bg);color:var(--powder);border:1px solid #c4b5fd;white-space:nowrap">粉烤</span>
@@ -896,7 +893,7 @@ function renderDB() {
     }
     if (blackGroup.length) {
       html += `<div style="background:#fff;border-radius:var(--radius);padding:14px;margin-bottom:10px;border:1.5px solid #e5e7eb">`;
-      html += `<div style="font-size:14px;font-weight:500;color:#6b7280;margin-bottom:10px;letter-spacing:0.02em">● 黑色系</div>`;
+      html += `<div style="font-size:14px;font-weight:500;color:#1f2937;margin-bottom:10px;letter-spacing:0.02em">黑色系</div>`;
       const blackPowder = blackGroup.filter(d => d.finish === '粉烤');
       const blackLiquid = blackGroup.filter(d => d.finish === '液烤');
       if (blackPowder.length) {
