@@ -714,29 +714,29 @@ function renderStats() {
   const casings = [...new Set(db.map(d => d.casing).filter(Boolean))].length;
   const years = [...new Set(db.map(d => d.date.slice(0,4)))].length;
   document.getElementById('stats-row').innerHTML = `
-    <div class="stat-card">
-      <div class="stat-icon" style="background:#eff6ff">
+    <div class="stat-card" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border-color:#bfdbfe">
+      <div class="stat-icon" style="background:#fff;box-shadow:0 2px 8px rgba(59,130,246,0.2)">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
       </div>
-      <div><div class="stat-val" style="color:#3b82f6">${total}</div><div class="stat-lbl">總記錄數</div></div>
+      <div style="flex:1"><div class="stat-val" style="color:#3b82f6">${total}</div><div class="stat-lbl" style="color:#1e40af">總記錄數</div></div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon" style="background:#f0fdf4">
+    <div class="stat-card" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-color:#bbf7d0">
+      <div class="stat-icon" style="background:#fff;box-shadow:0 2px 8px rgba(34,197,94,0.2)">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
       </div>
-      <div><div class="stat-val" style="color:#22c55e">${physical}</div><div class="stat-lbl">實體色板</div></div>
+      <div style="flex:1"><div class="stat-val" style="color:#22c55e">${physical}</div><div class="stat-lbl" style="color:#15803d">實體色板</div></div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon" style="background:#f5f3ff">
+    <div class="stat-card" style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);border-color:#ddd6fe">
+      <div class="stat-icon" style="background:#fff;box-shadow:0 2px 8px rgba(139,92,246,0.2)">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
       </div>
-      <div><div class="stat-val" style="color:#8b5cf6">${casings}</div><div class="stat-lbl">機殼廠數</div></div>
+      <div style="flex:1"><div class="stat-val" style="color:#8b5cf6">${casings}</div><div class="stat-lbl" style="color:#6d28d9">機殼廠數</div></div>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon" style="background:#fff7ed">
+    <div class="stat-card" style="background:linear-gradient(135deg,#fff7ed,#ffedd5);border-color:#fed7aa">
+      <div class="stat-icon" style="background:#fff;box-shadow:0 2px 8px rgba(249,115,22,0.2)">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       </div>
-      <div><div class="stat-val" style="color:#f97316">${years}</div><div class="stat-lbl">年份跨度</div></div>
+      <div style="flex:1"><div class="stat-val" style="color:#f97316">${years}</div><div class="stat-lbl" style="color:#c2410c">年份跨度</div></div>
     </div>`;
   // 更新側邊欄健康數字
   const currentYear = new Date().getFullYear();
